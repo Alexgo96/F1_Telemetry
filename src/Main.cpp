@@ -17,6 +17,8 @@ int main() {
     const std::string databaseName = "F1_TELEMETRY_DATABASE";
     bool driverNamesHardcode = false;
 
+    auto lastInsertTime = std::chrono::steady_clock::now();  // Store start time
+
     std::cout << "Starting..." << std::endl;
 
     // HARDCODING DRIVER NAMES (TEMPORAL. WE WILL CHANGE IT)
@@ -51,6 +53,9 @@ int main() {
 
     // Infinite loop to continuously receive and process data frames
     while (true) {
+        auto currentTime = std::chrono::steady_clock::now();
+        std::chrono::duration<double> timer_interval = currentTime - lastInsertTime;
+
         //Receive data frame
         std::vector<unsigned char> dataFrame = receiver.receiveDataFrame();
 
@@ -108,7 +113,7 @@ int main() {
         
 
         // Classified and insert in database depending on Packet Instance type
-        if(packetId == 2){
+        if(packetId == 2 && timer_interval.count() > 3.0){
             std::cout << "PACKET LAP DATA CREATED CORRECTLY" << std::endl;
             //PacketLapData* packetLapData = dynamic_cast<PacketLapData*>(packet.get());
             //PacketLapData* packetLapData = reinterpret_cast<PacketLapData*> (&packet);
