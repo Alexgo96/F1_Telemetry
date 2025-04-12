@@ -23,7 +23,7 @@ int main() {
 
     // HARDCODING DRIVER NAMES (TEMPORAL. WE WILL CHANGE IT)
     driverNamesHardcode = true;
-    std::string drivers[NUM_CARS]={"TSU", "PER", "GAS", "MAG", "ALB", "VER", "HAM", "LEC", "ZHO", "RUS", "HUL", "NOR", "SAR", "STR", "BOT", "OCO", "RIC", "PIA", "SAI", "ALO"};
+    std::string drivers[NUM_CARS]={"BOT", "MAG", "HAM", "ZHO", "TSU", "GAS", "LEC", "NOR", "PER", "ALB", "SAR", "HUL", "SAI", "OCO", "STR", "RIC", "RUS", "VER", "PIA", "ALO"};
     
     /*if (driverNamesHardcode){
         for(int i = 0; i < NUM_CARS; i++){
@@ -176,6 +176,159 @@ int main() {
                     std::to_string(packetLapData.getLapDataPosition(i).getPitStopShouldServePen()) + "," + 
                     std::to_string(packetLapData.getTimeTrialPBCarIdx()) + "," + 
                     std::to_string(packetLapData.getTimeTrialRivalCarIdx()) + ",'" + 
+                    drivers[i] + "')";
+
+// Make sure 'drivers[i]' is properly quoted as a string.
+
+
+                    std::cout << "SQL_STATEMENT = " << sqlStatement << std::endl;
+
+                    databaseManager.executeQuery(sqlStatement);
+            }
+        }
+
+        // Classified and insert in database depending on Packet Instance type
+        if(packetId == 4 && timer_interval.count() > 3.0){
+            std::cout << "PACKET LAP DATA CREATED CORRECTLY" << std::endl;
+            //PacketLapData* packetLapData = dynamic_cast<PacketLapData*>(packet.get());
+            //PacketLapData* packetLapData = reinterpret_cast<PacketLapData*> (&packet);
+            PacketLapData packetLapData = PacketFactory::createPacketLapData(packetId, ph, dataFrame, NUM_CARS);
+            std::cout << "AFTER CRATING THE PACKET LAP DATA -> MY CAR POSITION = " << std::to_string(packetLapData.getLapDataPosition(19).getCarPosition()) << std::endl;
+            for(int i = 0; i < NUM_CARS; i++){
+                // DEBUG
+                std::cout << "PACKET FORMAT READING FROM PACKET_LAP_DATA = " << std::to_string(packetFormat)<< std::endl;
+                //Insert in database
+                std::string sqlStatement = "INSERT INTO LAP_DATA_PACKET ("
+                    "m_packetFormat, m_gameYear, m_gameMajorVersion, m_gameMinorVersion, m_packetVersion, m_packetId, "
+                    "m_sessionUID, m_sessionTime, m_frameIdentifier, m_overallFrameIdentifier, m_playerCarIndex, m_secondaryPlayerCarIndex, "
+                    "m_lastLapTimeInMS, m_currentLapTimeInMS, m_sector1TimeInMS, m_sector1TimeMinutes, m_sector2TimeInMS, m_sector2TimeMinutes, "
+                    "m_deltaToCarInFrontInMS, m_deltaToRaceLeaderInMS, m_lapDistance, m_totalDistance, m_safetyCarDelta, m_carPosition, "
+                    "m_currentLapNum, m_pitStatus, m_numPitStops, m_sector, m_currentLapInvalid, m_penalties, m_totalWarnings, "
+                    "m_cornerCuttingWarnings, m_numUnservedDriveThroughPens, m_numUnservedStopGoPens, m_gridPosition, m_driverStatus, "
+                    "m_resultStatus, m_pitLaneTimerActive, m_pitLaneTimeInLaneInMS, m_pitStopTimerInMS, m_pitStopShouldServePen, m_timeTrialPBCarIdx, "
+                    "m_timeTrialRivalCarIdx, m_driverName"
+                    ") VALUES (" + 
+                    std::to_string(packetFormat)+ "," + 
+                    std::to_string(gameYear) + "," + 
+                    std::to_string(gameMajorVersion) + "," + 
+                    std::to_string(gameMinorVersion) + "," + 
+                    std::to_string(packetVersion) + "," + 
+                    std::to_string(packetId) + "," + 
+                    std::to_string(sessionUID) + "," + 
+                    std::to_string(sessionTime) + "," + 
+                    std::to_string(frameIdentifier) + "," + 
+                    std::to_string(overallFrameIdentifier) + "," + 
+                    std::to_string(playerCarIndex) + "," + 
+                    std::to_string(secondaryPlayerCarIndex) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getLastLapTimeInMS()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getCurrentLapTimeInMS()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getSector1TimeInMS()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getSector1TimeMinutes()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getSector2TimeInMS()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getSector2TimeMinutes()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getDeltaToCarInFrontInMS()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getDeltaToRaceLeaderInMS()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getLapDistance()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getTotalDistance()) + "," +
+                    std::to_string(packetLapData.getLapDataPosition(i).getSafetyCarDelta()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getCarPosition()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getCurrentLapNum()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getPitStatus()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getNumPitStops()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getSector()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getCurrentLapInvalid()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getPenalties()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getTotalWarnings()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getCornerCuttingWarnings()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getNumUnservedDriveThroughPens()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getNumUnservedStopGoPens()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getGridPosition()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getDriverStatus()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getResultStatus()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getPitLaneTimerActive()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getPitLaneTimeInLaneInMS()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getPitStopTimerInMS()) + "," + 
+                    std::to_string(packetLapData.getLapDataPosition(i).getPitStopShouldServePen()) + "," + 
+                    std::to_string(packetLapData.getTimeTrialPBCarIdx()) + "," + 
+                    std::to_string(packetLapData.getTimeTrialRivalCarIdx()) + ",'" + 
+                    drivers[i] + "')";
+
+// Make sure 'drivers[i]' is properly quoted as a string.
+
+
+                    std::cout << "SQL_STATEMENT = " << sqlStatement << std::endl;
+
+                    databaseManager.executeQuery(sqlStatement);
+            }
+        }
+
+        // PACKET CAR TELEMTRY DATA
+        if(packetId == 6 && timer_interval.count() > 3.0){
+            std::cout << "PACKET LAP DATA CREATED CORRECTLY" << std::endl;
+            //PacketLapData* packetLapData = dynamic_cast<PacketLapData*>(packet.get());
+            //PacketLapData* packetLapData = reinterpret_cast<PacketLapData*> (&packet);
+            PacketCarTelemetryData packetCarTelemetryData = PacketFactory::createPacketCarTelemetryData(packetId, ph, dataFrame, NUM_CARS);
+            std::cout << "AFTER CRATING THE PACKET CAR TELEMETRY DATA-> MY CAR SPEED = " << std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(19).getSpeed()) << std::endl;
+            for(int i = 0; i < NUM_CARS; i++){
+                // DEBUG
+                std::cout << "PACKET FORMAT READING FROM PACKET_CAR_TELEMETRY_DATA = " << std::to_string(packetFormat)<< std::endl;
+                //Insert in database
+                std::string sqlStatement = "INSERT INTO CAR_TELEMETRY_DATA_PACKET ("
+                    "m_packetFormat, m_gameYear, m_gameMajorVersion, m_gameMinorVersion, m_packetVersion, m_packetId, "
+                    "m_sessionUID, m_sessionTime, m_frameIdentifier, m_overallFrameIdentifier, m_playerCarIndex, m_secondaryPlayerCarIndex, "
+                    "m_speed, m_throttle, m_steer, m_brake, m_clutch, m_gear, m_engineRPM, m_drs, m_revLightsPercent, m_revLightsBitValue, "
+                    "m_brakesTemperatureRL, m_brakesTemperatureRR, m_brakesTemperatureFL, m_brakesTemperatureFR, m_tyresSurfaceTemperatureRL, "
+                    "m_tyresSurfaceTemperatureRR, m_tyresSurfaceTemperatureFL, m_tyresSurfaceTemperatureFR, m_tyresInnerTemperatureRL, "
+                    "m_tyresInnerTemperatureRR, m_tyresInnerTemperatureFL, m_tyresInnerTemperatureFR, m_engineTemperature, m_tyresPressureRL, "
+                    "m_tyresPressureRR, m_tyresPressureFL, m_tyresPressureFR, m_surfaceTypeRL, m_surfaceTypeRR, m_surfaceTypeFL, m_surfaceTypeFR, "
+                    "m_mfdPanelIndex, m_mfdPanelIndexSecondaryPlayer, m_suggestedGear, m_driverName"
+                    ") VALUES (" + 
+                    std::to_string(packetFormat)+ "," + 
+                    std::to_string(gameYear) + "," + 
+                    std::to_string(gameMajorVersion) + "," + 
+                    std::to_string(gameMinorVersion) + "," + 
+                    std::to_string(packetVersion) + "," + 
+                    std::to_string(packetId) + "," + 
+                    std::to_string(sessionUID) + "," + 
+                    std::to_string(sessionTime) + "," + 
+                    std::to_string(frameIdentifier) + "," + 
+                    std::to_string(overallFrameIdentifier) + "," + 
+                    std::to_string(playerCarIndex) + "," + 
+                    std::to_string(secondaryPlayerCarIndex) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getSpeed()) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getThrottle()) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getSteer()) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getBrake()) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getClutch()) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getGear()) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getENgineRPM()) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getDRS()) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getRevLightsPercent()) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getRevLightsBitValue()) + "," +
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getBrakesTemperature()[0]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getBrakesTemperature()[1]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getBrakesTemperature()[2]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getBrakesTemperature()[3]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getTyresSurfaceTemperature()[0]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getTyresSurfaceTemperature()[1]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getTyresSurfaceTemperature()[2]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getTyresSurfaceTemperature()[3]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getTyresInnerTemperature()[0]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getTyresInnerTemperature()[1]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getTyresInnerTemperature()[2]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getTyresInnerTemperature()[3]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getEngineTemperature()) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getTyresPressure()[0]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getTyresPressure()[1]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getTyresPressure()[2]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getTyresPressure()[3]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getSurfaceType()[0]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getSurfaceType()[1]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getSurfaceType()[2]) + "," + 
+                    std::to_string(packetCarTelemetryData.getCarTelemetryDataPosition(i).getSurfaceType()[3]) + "," + 
+                    std::to_string(packetCarTelemetryData.getMfdPanelIndex()) + "," + 
+                    std::to_string(packetCarTelemetryData.getMfdPanelIndexSecondaryPlayer()) + "," + 
+                    std::to_string(packetCarTelemetryData.getSugestedGear()) + ",'" + 
                     drivers[i] + "')";
 
 // Make sure 'drivers[i]' is properly quoted as a string.

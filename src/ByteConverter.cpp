@@ -1,4 +1,5 @@
 #include "../lib/ByteConverter.h"
+#include <array>
 
 // Function to convert a byte array to uint8_t
 uint8_t ByteConverter::toUInt8(const std::vector<unsigned char>& dataFrame, size_t offset) {
@@ -6,7 +7,7 @@ uint8_t ByteConverter::toUInt8(const std::vector<unsigned char>& dataFrame, size
 }
 
 // Function to convert a byte array to int8_t
-int8_t toInt8(const std::vector<unsigned char>& dataFrame, size_t offset) {
+int8_t ByteConverter::toInt8(const std::vector<unsigned char>& dataFrame, size_t offset) {
     return static_cast<int8_t>(dataFrame[offset]);
 }
 
@@ -53,6 +54,12 @@ uint64_t ByteConverter::toUInt64(const std::vector<unsigned char>& dataFrame, si
 }
 
 // Function to convert a byte array to char
-char ByteConverter::toChar(const std::vector<unsigned char>& dataFrame, size_t offset) {
-    return static_cast<char>(dataFrame[offset]);
+std::array<char, 48> ByteConverter::toChar(const std::vector<unsigned char>& dataFrame, size_t offset) {
+    std::array<char, 48> charArray{};
+    
+    for (size_t i = 0; i < 48 && (offset + i) < dataFrame.size(); ++i) {
+        charArray[i] = static_cast<char>(dataFrame[offset + i]);
+    }
+    
+    return charArray; // Returns a copy (safe and easy to use)
 }

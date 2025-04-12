@@ -3,6 +3,7 @@
 #include "../lib/Packet.h"
 #include "../lib/PacketLapData.h"
 #include "../lib/PacketFactory.h"
+#include "../lib/PacketCarTelemetryData.h"
 
 
 // Function to create a packet based on a number
@@ -34,5 +35,17 @@ PacketLapData PacketFactory::createPacketLapData(int packetType, PacketHeader pa
     packet.createPacketLapData(dataFrame, numCars);
     std::cout << "IN THE FACTORY GAME YEAR IS = " << std::to_string(packet.getHeader().getGameYear()) << std::endl;
     std::cout << "MY CAR POSITION = " << std::to_string(packet.getLapDataPosition(19).getCarPosition()) << std::endl;
+    return packet;
+}
+
+// Function to create a packet based on a number
+PacketCarTelemetryData PacketFactory::createPacketCarTelemetryData(int packetType, PacketHeader packetHeader, std::vector<unsigned char>& dataFrame, uint8_t numCars) {
+    PacketCarTelemetryData packet = PacketCarTelemetryData(packetHeader);
+    std::cout << "Processing pakcet in PacketFactory" << std::endl;
+    std::cout << "packetType = " << packetType << std::endl;
+    std::cout << "Processing PacketCarTelemetryData" << std::endl;
+    packet.createPacketCarTelemetryData(dataFrame, numCars);
+    std::cout << "IN THE FACTORY GAME YEAR IS = " << std::to_string(packet.getHeader().getGameYear()) << std::endl;
+    std::cout << "MY CAR SPEED = " << std::to_string(packet.getCarTelemetryDataPosition(19).getSpeed()) << std::endl;
     return packet;
 }

@@ -5,6 +5,7 @@
 #include <vector>
 #include <cstdint>
 #include <cstring>
+#include <array>
 
 class ByteConverter {
 public:
@@ -33,7 +34,7 @@ public:
     static uint64_t toUInt64(const std::vector<unsigned char>& dataFrame, size_t offset);
 
     // Convert from bytes to char
-    static char toChar(const std::vector<unsigned char>& dataFrame, size_t offset);
+    static std::array<char, 48>  toChar(const std::vector<unsigned char>& dataFrame, size_t offset);
 };
 
 #endif // BYTE_CONVERTER_H
